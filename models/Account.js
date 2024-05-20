@@ -22,6 +22,7 @@ var accountSchema = new Schema(
     },
     image: {
       type: String,
+      default: null,
     },
     phone: {
       type: String,
