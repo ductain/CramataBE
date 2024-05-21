@@ -2,6 +2,7 @@ const express = require("express");
 const port = 5000;
 const mongoose = require("mongoose");
 const accountRouter = require("./routes/accountRouter");
+const taskRouter = require("./routes/taskRouter");
 
 const app = express();
 
@@ -20,6 +21,7 @@ connect.then(
 app.use(express.json());
 
 app.use("/auth", accountRouter);
+app.use("/tasks", taskRouter);
 
 app.listen(port, () => {
   console.log("Server is running.");
