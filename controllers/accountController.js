@@ -46,6 +46,41 @@ class AccountController {
       });
     }
   }
+
+  async login(req, res, next) {
+    const { username, password } = req.body;
+
+    try {
+      const user = await Accounts.findOne({ username });
+
+      if (!user) {
+        return res
+          .status(401)
+          .json({ error: "Tên đăng nhập hoặc mật khẩu không chính xác" });
+      }
+
+      const isMatch = await bcrypt.compare(password, user.password);
+
+      if (!isMatch) {
+        return res
+          .status(401)
+          .json({ error: "Tên đăng nhập hoặc mật khẩu không chính xác" });
+      }
+
+      if (!user.status) {
+        return res.status(403).json({ error: "Tài khoản của bạn đã bị khoá" });
+      }
+
+      return res
+        .status(200)
+        .json({
+          user: { ...user.toObject(), password: undefined },
+          message: "Đăng nhập thành công",
+        });
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 module.exports = new AccountController();
