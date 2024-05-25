@@ -3,8 +3,10 @@ const productCategoryController = require('../controllers/productCategoryControl
 
 const productCategoryRouter = express.Router();
 productCategoryRouter
-  .route("/productCategories")
+  .route("/")
   .get(productCategoryController.getAll)
   .post(productCategoryController.create)
+
+productCategoryRouter.route("/:id").put(productCategoryController.update);
 
 module.exports = productCategoryRouter;

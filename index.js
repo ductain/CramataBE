@@ -3,6 +3,10 @@ const port = 5000;
 const mongoose = require("mongoose");
 const accountRouter = require("./routes/accountRouter");
 const taskRouter = require("./routes/taskRouter");
+const videoCategoryRouter = require("./routes/videoCategoryRouter");
+const videoRouter = require("./routes/videoRouter");
+const productCategoryRouter = require("./routes/productCategoryRouter");
+const productRouter = require("./routes/productRouter");
 
 const app = express();
 
@@ -22,6 +26,10 @@ app.use(express.json());
 
 app.use("/auth", accountRouter);
 app.use("/tasks", taskRouter);
+app.use("/videoCategories", videoCategoryRouter);
+app.use("/videos", videoRouter);
+app.use("/productCategories", productCategoryRouter);
+app.use("/products", productRouter);
 
 app.listen(port, () => {
   console.log("Server is running.");

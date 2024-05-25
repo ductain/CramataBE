@@ -38,7 +38,7 @@ class AccountController {
             newUser
               .save()
               .then((user) => {
-                res.status(200).json("User registered successfully");
+                res.status(200).json("Đăng kí tài khoản thành công");
               })
               .catch(next);
           });

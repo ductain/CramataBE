@@ -27,7 +27,7 @@ class TaskController {
 
       await newTask.save();
 
-      res.status(201).json({ data: newTask, message: "Tạo mới thành công" });
+      res.status(201).json({ data: newTask, message: "Nhiệm vụ đã được giao" });
     } catch (err) {
       next(err);
     }
@@ -39,7 +39,7 @@ class TaskController {
       const task = await Tasks.findById(id);
 
       if (!task) {
-        return res.status(404).json({ error: "Task not found" });
+        return res.status(404).json({ error: "Nhiệm vụ không tồn tại" });
       }
 
       const updatedTask = await Tasks.findByIdAndUpdate(
@@ -56,7 +56,7 @@ class TaskController {
       );
       res
         .status(200)
-        .json({ data: updatedTask, message: "Cập nhật thành công" });
+        .json({ data: updatedTask, message: "Cập nhật nhiệm vụ thành công" });
     } catch (err) {
       next(err);
     }

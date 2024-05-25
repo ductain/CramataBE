@@ -7,18 +7,42 @@ class ProductCategoryController {
                 res.status(200).json(categories)
             })
             .catch(err => {
-                res.status(500).json('Có lỗi xảy ra:' + err.message)
+                return res.status(500).json({ error: "Không tìm thấy loại sản phẩm nào" });
             })
-    }
+    };
     async create(req, res, next) {
         ProductCategories.create(req.body)
             .then((category) => {
                 res.status(200).json('Tạo mới thành công loại sản phẩm');
             })
             .catch(err => {
-                res.status(500).json('Có lỗi xảy ra:' + err.message)
+                return res.status(401).json({ error: "Có lỗi xảy ra" });
             })
+    };
+    async update(req, res, next) {
+        try {
+            const { id } = req.params;
+            const { name } = req.body;
+            const productCategory = await ProductCategories.findById(id);
+
+            if (!productCategory) {
+                return res.status(404).json({ error: "Loại sản phẩm không tồn tại" });
+            };
+
+            const updatedProductCategory = await ProductCategories.findByIdAndUpdate(
+                id,
+                {
+                    name,
+                },
+                { new: true }
+            );
+            res
+                .status(200)
+                .json({ data: updatedProductCategory, message: "Cập nhật loại sản phẩm thành công" });
+        } catch (err) {
+            next(err);
+        }
     };
 }
 
-export default ProductCategoryController;
+module.exports = new ProductCategoryController();

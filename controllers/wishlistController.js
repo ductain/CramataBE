@@ -21,4 +21,4 @@ class WishlistController {
     };
 }
 
-export default WishlistController;
+module.exports = new WishlistController();
