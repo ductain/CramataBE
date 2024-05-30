@@ -13,20 +13,16 @@ class AccountController {
       email,
       role,
     } = req.body;
-    let errors = [];
     if (!username || !password || !firstName || !lastName || !phone) {
-      errors.push("Please enter all fields");
+      res.status(400).json({error: "Please enter all fields"});
     }
     if (password.length < 6) {
-      errors.push("Password must be at least 6 characters");
+      res.status(400).json({error: "Password must be at least 6 characters"});
     }
-    if (errors.length > 0) {
-      res.status(400).json(errors);
-    } else {
+    else {
       Accounts.findOne({ username: username }).then((user) => {
         if (user) {
-          errors.push("Username already exists");
-          res.status(400).json(errors);
+          res.status(400).json({error: "Username already exists"});
         } else {
           const newUser = new Accounts({
             ...req.body,
@@ -38,7 +34,7 @@ class AccountController {
             newUser
               .save()
               .then((user) => {
-                res.status(200).json("Đăng kí tài khoản thành công");
+                res.status(200).json({message: "Đăng kí tài khoản thành công"});
               })
               .catch(next);
           });
