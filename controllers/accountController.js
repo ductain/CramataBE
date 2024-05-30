@@ -13,16 +13,16 @@ class AccountController {
       email,
       role,
     } = req.body;
-    if (!username || !password || !firstName || !lastName || !phone) {
-      res.status(400).json({error: "Please enter all fields"});
+    if (!username || !password || !firstName || !lastName || !phone || !email) {
+      res.status(400).json({error: "Xin hãy nhập tất cả thông tin"});
     }
-    if (password.length < 6) {
-      res.status(400).json({error: "Password must be at least 6 characters"});
+    else if (password.length < 6) {
+      res.status(400).json({error: "Password phải có ít nhất 6 ký tự"});
     }
     else {
       Accounts.findOne({ username: username }).then((user) => {
         if (user) {
-          res.status(400).json({error: "Username already exists"});
+          res.status(400).json({error: "Username đã tồn tại"});
         } else {
           const newUser = new Accounts({
             ...req.body,
