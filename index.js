@@ -7,7 +7,7 @@ const videoCategoryRouter = require("./routes/videoCategoryRouter");
 const videoRouter = require("./routes/videoRouter");
 const productCategoryRouter = require("./routes/productCategoryRouter");
 const productRouter = require("./routes/productRouter");
-
+const pointRouter = require("./routes/pointRouter");
 const app = express();
 
 const connect = mongoose.connect(
@@ -30,6 +30,7 @@ app.use("/videoCategories", videoCategoryRouter);
 app.use("/videos", videoRouter);
 app.use("/productCategories", productCategoryRouter);
 app.use("/products", productRouter);
+app.use("/points", pointRouter);
 
 app.listen(port, () => {
   console.log("Server is running.");
