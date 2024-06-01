@@ -1,5 +1,5 @@
 const Accounts = require("../models/Account");
-const Points = require("../models/Point")
+const Points = require("../models/Points")
 const bcrypt = require("bcrypt");
 
 class AccountController {
