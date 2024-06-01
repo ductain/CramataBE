@@ -9,7 +9,7 @@ class NotificationController {
             .catch(err => {
                 res.status(500).json('Error:' + err.message)
             })
-    }
+    };
     async create(req, res, next) {
         Notifications.create(req.body)
             .then((notification) => {

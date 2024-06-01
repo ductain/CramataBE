@@ -7,6 +7,7 @@ const pointSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Accounts",
       required: true,
+      unique: true,
     },
     points: {
       type: Number,

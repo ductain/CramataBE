@@ -1,6 +1,6 @@
 const VideoCategories = require("../models/VideoCategories");
 
-class VideoCategoriesController {
+class VideoCategoryController {
     async getAll(req, res, next) {
         VideoCategories.find({})
             .then((categories) => {
@@ -45,4 +45,4 @@ class VideoCategoriesController {
     };
 }
 
-module.exports = new VideoCategoriesController();
+module.exports = new VideoCategoryController();
