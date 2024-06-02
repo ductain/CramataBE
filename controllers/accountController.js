@@ -1,5 +1,5 @@
 const Accounts = require("../models/Account");
-const Points = require("../models/Points")
+const Points = require("../models/Points");
 const bcrypt = require("bcrypt");
 
 class AccountController {
@@ -15,15 +15,13 @@ class AccountController {
       role,
     } = req.body;
     if (!username || !password || !firstName || !lastName || !phone || !email) {
-      res.status(400).json({error: "Xin hãy nhập tất cả thông tin"});
-    }
-    else if (password.length < 6) {
-      res.status(400).json({error: "Password phải có ít nhất 6 ký tự"});
-    }
-    else {
+      res.status(400).json({ error: "Xin hãy nhập tất cả thông tin" });
+    } else if (password.length < 6) {
+      res.status(400).json({ error: "Password phải có ít nhất 6 ký tự" });
+    } else {
       Accounts.findOne({ username: username }).then((user) => {
         if (user) {
-          res.status(400).json({error: "Username đã tồn tại"});
+          res.status(400).json({ error: "Username đã tồn tại" });
         } else {
           const newUser = new Accounts({
             ...req.body,
@@ -35,7 +33,9 @@ class AccountController {
             newUser
               .save()
               .then((user) => {
-                res.status(200).json({message: "Đăng kí tài khoản thành công"});
+                res
+                  .status(200)
+                  .json({ message: "Đăng kí tài khoản thành công" });
               })
               .catch(next);
           });
@@ -46,23 +46,25 @@ class AccountController {
 
   async registerChild(req, res, next) {
     try {
-      const {
-        username,
-        password,
-        firstName,
-        lastName,
-        image,
-        phone,
-        email,
-      } = req.body;
+      const { username, password, firstName, lastName, image, phone, email } =
+        req.body;
 
       // Validate the input
-      if (!username || !password || !firstName || !lastName || !phone || !email) {
+      if (
+        !username ||
+        !password ||
+        !firstName ||
+        !lastName ||
+        !phone ||
+        !email
+      ) {
         return res.status(400).json({ error: "Xin hãy nhập tất cả thông tin" });
       }
 
       if (password.length < 6) {
-        return res.status(400).json({ error: "Password phải có ít nhất 6 ký tự" });
+        return res
+          .status(400)
+          .json({ error: "Password phải có ít nhất 6 ký tự" });
       }
 
       // Check if the username already exists
@@ -83,7 +85,7 @@ class AccountController {
         image,
         phone,
         email,
-        role: 'Children', // Set the role to 'Children'
+        role: "Children", // Set the role to 'Children'
       });
 
       const savedChildAccount = await newChildAccount.save();
@@ -100,9 +102,53 @@ class AccountController {
       res.status(200).json({
         message: "Tạo tài khoản và điểm cho trẻ em thành công",
       });
-
     } catch (err) {
-      next(err)
+      next(err);
+    }
+  }
+
+  async changePassword(req, res, next) {
+    const { accountId } = req.query;
+    const { oldPassword, newPassword } = req.body;
+
+    if (!oldPassword || !newPassword) {
+      return res
+        .status(400)
+        .json({ error: "Xin hãy nhập mật khẩu cũ và mới." });
+    }
+
+    if (newPassword.length < 6) {
+      return res
+        .status(400)
+        .json({ error: "Mật khẩu phải có ít nhất 6 ký tự." });
+    }
+
+    try {
+      const account = await Accounts.findById(accountId);
+
+      if (!account) {
+        return res.status(404).json({ error: "Tài khoản không tồn tại." });
+      }
+
+      const isMatch = await bcrypt.compare(oldPassword, account.password);
+
+      if (!isMatch) {
+        return res.status(401).json({ error: "Mật khẩu cũ không chính xác." });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+      account.password = hashedPassword;
+      await account.save();
+
+      res
+        .status(200)
+        .json({
+          message: "Mật khẩu thay đổi thành công. Xin hãy đăng nhập lại.",
+        });
+    } catch (err) {
+      next(err);
     }
   }
 
@@ -130,12 +176,10 @@ class AccountController {
         return res.status(403).json({ error: "Tài khoản của bạn đã bị khoá" });
       }
 
-      return res
-        .status(200)
-        .json({
-          user: { ...user.toObject(), password: undefined },
-          message: "Đăng nhập thành công",
-        });
+      return res.status(200).json({
+        user: { ...user.toObject(), password: undefined },
+        message: "Đăng nhập thành công",
+      });
     } catch (err) {
       next(err);
     }
