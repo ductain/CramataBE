@@ -184,6 +184,25 @@ class AccountController {
       next(err);
     }
   }
+
+  async getChildrenAccountsByPhone(req, res, next) {
+    const phone = req.query.phone
+
+    try {
+      const childrenAccounts = await Accounts.find({
+        role: "Children",
+        phone: phone
+      });
+
+      if (!childrenAccounts.length) {
+        return res.status(404).json({ message: "No children accounts found with the provided phone number." });
+      }
+
+      res.status(200).json({accounts: childrenAccounts});
+    } catch (err) {
+      next(err)
+    }
+  }
 }
 
 module.exports = new AccountController();
