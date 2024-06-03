@@ -184,6 +184,40 @@ class AccountController {
       next(err);
     }
   }
+
+  async getChildrenAccountsByPhone(req, res, next) {
+    const phone = req.query.phone;
+    try {
+      // First, find all accounts with the role "Children" and the given phone number
+      const childrenAccounts = await Accounts.find({
+        role: "Children",
+        phone: phone
+      }).select('-password'); // Exclude the password field
+
+      if (!childrenAccounts.length) {
+        return res.status(404).json({ message: "No children accounts found with the provided phone number." });
+      }
+
+      // Then, find all points associated with these children accounts
+      const childrenIds = childrenAccounts.map(account => account._id);
+      const childrenPoints = await Points.find({
+        childId: { $in: childrenIds }
+      }).select('points childId -_id'); // Select only the 'points' and 'childId' fields, exclude the '_id' field
+
+      // Combine the accounts with their points
+      const combinedResults = childrenAccounts.map(account => {
+        const accountPoints = childrenPoints.find(points => points.childId.equals(account._id));
+        return {
+          ...account.toObject(),
+          points: accountPoints ? accountPoints.points : null
+        };
+      });
+
+      res.status(200).json({accounts: combinedResults});
+    } catch (err) {
+      next(err)
+    }
+  }
 }
 
 module.exports = new AccountController();

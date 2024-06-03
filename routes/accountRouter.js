@@ -6,5 +6,6 @@ accountRouter.route("/user/register").post(accountController.register);
 accountRouter.route("/user/registerChild").post(accountController.registerChild);
 accountRouter.route("/user/changePassword").put(accountController.changePassword);
 accountRouter.route("/user/login").post(accountController.login);
+accountRouter.route("/user/childrenAccount").get(accountController.getChildrenAccountsByPhone);
 
 module.exports = accountRouter;
