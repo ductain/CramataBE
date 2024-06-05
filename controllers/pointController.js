@@ -1,4 +1,5 @@
 const Points = require("../models/Points");
+const Notifications = require('../models/Notifications')
 
 class PointController {
     async getAll(req, res, next) {
@@ -85,6 +86,37 @@ class PointController {
             next(err);
         }
     };
+    async bonusMinus(req, res, next) {
+        try {
+            const childId = req.params.childId;
+            const { points, reason } = req.body;
+            const pointDocument = await Points.findOne({ childId: childId });
+      
+            if (!pointDocument) {
+              return res.status(404).json({ error: "Không tìm thấy điểm của bé" });
+            }
+      
+            // Update the points
+            pointDocument.points += points;
+            const updatedPoint = await pointDocument.save();
+      
+            // Create a notification
+            const newNotification = new Notifications({
+              userId: childId,
+              notiType: 'notiTask',
+              title: `Điểm của bạn đã được ${points >= 0 ? 'cộng' : 'trừ'} ${Math.abs(points)} điểm.`,
+              message: reason,
+              points: points
+            });
+      
+            // Save the notification
+            await newNotification.save();
+      
+            res.status(200).json({ data: updatedPoint, message: "Điểm bé đã được cập nhật" });
+          } catch (err) {
+            next(err);
+          }
+    }
 }
 
 module.exports = new PointController();

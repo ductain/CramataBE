@@ -14,5 +14,7 @@ pointRouter.route("/:id")
 pointRouter.route("/child/:childId")
     .get(pointController.getByChildId)
     .put(pointController.updateByChildId);
+pointRouter.route("/modifyPoint/:childId")
+    .put(pointController.bonusMinus)
 
 module.exports = pointRouter;
