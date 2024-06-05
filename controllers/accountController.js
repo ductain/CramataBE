@@ -3,6 +3,18 @@ const Points = require("../models/Points");
 const bcrypt = require("bcrypt");
 
 class AccountController {
+  async getAccountById(req, res, next) {
+    const id = req.query.id;
+    Accounts.findOne({ _id: id })
+      .select("-password")
+      .then((user) => {
+        if (!user) {
+          res.status(400).json({ error: "Tài khoản không tồn tại" });
+        } else {
+          res.status(200).json({ user: user });
+        }
+      });
+  }
   async register(req, res, next) {
     const {
       username,
@@ -142,11 +154,9 @@ class AccountController {
       account.password = hashedPassword;
       await account.save();
 
-      res
-        .status(200)
-        .json({
-          message: "Mật khẩu thay đổi thành công. Xin hãy đăng nhập lại.",
-        });
+      res.status(200).json({
+        message: "Mật khẩu thay đổi thành công. Xin hãy đăng nhập lại.",
+      });
     } catch (err) {
       next(err);
     }
@@ -191,31 +201,35 @@ class AccountController {
       // First, find all accounts with the role "Children" and the given phone number
       const childrenAccounts = await Accounts.find({
         role: "Children",
-        phone: phone
-      }).select('-password'); // Exclude the password field
+        phone: phone,
+      }).select("-password"); // Exclude the password field
 
       if (!childrenAccounts.length) {
-        return res.status(404).json({ message: "No children accounts found with the provided phone number." });
+        return res.status(404).json({
+          message: "No children accounts found with the provided phone number.",
+        });
       }
 
       // Then, find all points associated with these children accounts
-      const childrenIds = childrenAccounts.map(account => account._id);
+      const childrenIds = childrenAccounts.map((account) => account._id);
       const childrenPoints = await Points.find({
-        childId: { $in: childrenIds }
-      }).select('points childId -_id'); // Select only the 'points' and 'childId' fields, exclude the '_id' field
+        childId: { $in: childrenIds },
+      }).select("points childId -_id"); // Select only the 'points' and 'childId' fields, exclude the '_id' field
 
       // Combine the accounts with their points
-      const combinedResults = childrenAccounts.map(account => {
-        const accountPoints = childrenPoints.find(points => points.childId.equals(account._id));
+      const combinedResults = childrenAccounts.map((account) => {
+        const accountPoints = childrenPoints.find((points) =>
+          points.childId.equals(account._id)
+        );
         return {
           ...account.toObject(),
-          points: accountPoints ? accountPoints.points : null
+          points: accountPoints ? accountPoints.points : null,
         };
       });
 
-      res.status(200).json({accounts: combinedResults});
+      res.status(200).json({ accounts: combinedResults });
     } catch (err) {
-      next(err)
+      next(err);
     }
   }
 }
