@@ -56,6 +56,8 @@ class PointController {
     //With childId
     async getByChildId(req, res, next) {
         Points.findOne({ childId: req.params.childId })
+            //Them dong hien thi thong tin cua child
+            .populate('childId')
             .then((point) => {
                 res.status(200).json(point)
             })
@@ -67,7 +69,7 @@ class PointController {
         try {
             const childId = req.params.childId;
             const { points } = req.body;
-            const point = await Points.findOne({ childId: childId});
+            const point = await Points.findOne({ childId: childId });
 
             if (!point) {
                 return res.status(404).json({ error: "Không tìm thấy điểm của bé" });
@@ -91,31 +93,31 @@ class PointController {
             const childId = req.params.childId;
             const { points, reason } = req.body;
             const pointDocument = await Points.findOne({ childId: childId });
-      
+
             if (!pointDocument) {
-              return res.status(404).json({ error: "Không tìm thấy điểm của bé" });
+                return res.status(404).json({ error: "Không tìm thấy điểm của bé" });
             }
-      
+
             // Update the points
             pointDocument.points += points;
             const updatedPoint = await pointDocument.save();
-      
+
             // Create a notification
             const newNotification = new Notifications({
-              userId: childId,
-              notiType: 'notiTask',
-              title: `Điểm của bạn đã được ${points >= 0 ? 'cộng' : 'trừ'} ${Math.abs(points)} điểm.`,
-              message: reason,
-              points: points
+                userId: childId,
+                notiType: 'notiTask',
+                title: `Điểm của bạn đã được ${points >= 0 ? 'cộng' : 'trừ'} ${Math.abs(points)} điểm.`,
+                message: reason,
+                points: points
             });
-      
+
             // Save the notification
             await newNotification.save();
-      
+
             res.status(200).json({ data: updatedPoint, message: "Điểm bé đã được cập nhật" });
-          } catch (err) {
+        } catch (err) {
             next(err);
-          }
+        }
     }
 }
 
