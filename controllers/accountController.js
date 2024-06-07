@@ -232,6 +232,19 @@ class AccountController {
       next(err);
     }
   }
+  async checkPhoneExisted(req, res, next) {
+    const phone = req.query.phone;
+    try {
+      const accounts = await Accounts.find({ phone: phone });
+      if (!accounts.length) {
+        return res.status(200).json({ isExisted: false });
+      } else {
+        return res.status(400).json({ isExisted: true });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new AccountController();
