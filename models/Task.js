@@ -29,6 +29,10 @@ const taskSchema = new Schema(
       type: Date,
       required: true,
     },
+    status: {
+      type: String,
+      default: 'Pending',
+    },
   },
   { timestamps: true }
 );
