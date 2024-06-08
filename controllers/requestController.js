@@ -11,6 +11,18 @@ class RequestController {
       });
   }
 
+  async getRequestByParentId(req, res, next) {
+    const id = req.query.id;
+    Request.find({ parentId: id })
+      .then((request) => {
+        if (request.length === 0) {
+          res.status(400).json({ error: "Không có yêu cầu nào" });
+        } else {
+          res.status(200).json({ requests: request });
+        }
+      });
+  }
+
   async create(req, res, next) {
     Request.create(req.body)
       .then((request) => {
