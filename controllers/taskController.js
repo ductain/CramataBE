@@ -12,6 +12,17 @@ class TaskController {
       res.status(400).json(error);
     }
   }
+  async getTasksByParentId(req, res, next) {
+    let data = [];
+    const parentId = req.query.parentId;
+    try {
+      data = await Tasks.find({ parentId: parentId }).populate("parentId").populate("childId");
+      res.status(200).json(data);
+    } catch (error) {
+      console.log(error);
+      res.status(400).json(error);
+    }
+  }
   async createTask(req, res, next) {
     try {
       const { parentId, childId, name, points, note, assignedDate } = req.body;
