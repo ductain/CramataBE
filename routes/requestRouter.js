@@ -4,7 +4,8 @@ const requestController = require("../controllers/requestController");
 const requestRouter = express.Router();
 
 requestRouter.route("/").get(requestController.getAll);
+requestRouter.route("/requestDetail").get(requestController.getDetail);
 requestRouter.route("/requestOfParent").get(requestController.getRequestByParentId);
-requestRouter.route("/create").post(requestController.create);
+requestRouter.route("/").post(requestController.create);
 
 module.exports = requestRouter;

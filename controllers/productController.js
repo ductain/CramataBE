@@ -15,7 +15,7 @@ class ProductController {
         if (req.body.isInShop) {
             Products.findOne({ name: req.body.name, isInShop: true })
                 .then((products) => {
-                    return res.status(500).json({ error: "Sản phẩm trùng tên!" });
+                    return res.status(400).json({ error: "Sản phẩm trùng tên!" });
                 })
         }
         Products.create(req.body)

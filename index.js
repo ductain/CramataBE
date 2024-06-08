@@ -9,6 +9,11 @@ const productCategoryRouter = require("./routes/productCategoryRouter");
 const productRouter = require("./routes/productRouter");
 const pointRouter = require("./routes/pointRouter");
 const requestRouter = require('./routes/requestRouter')
+const requestForBuyingRouter = require('./routes/requestForBuyingRouter')
+const requestForCustomProductRouter = require('./routes/requestForCustomProductRouter')
+const requestForWishlistRouter = require('./routes/requestForWishlistRouter')
+
+
 const app = express();
 
 const connect = mongoose.connect(
@@ -33,6 +38,9 @@ app.use("/productCategories", productCategoryRouter);
 app.use("/products", productRouter);
 app.use("/points", pointRouter);
 app.use("/requests", requestRouter);
+app.use("/requestForWishlist", requestForWishlistRouter);
+app.use("/requestForCustomProduct", requestForCustomProductRouter);
+app.use("/requestForBuying", requestForBuyingRouter);
 
 app.listen(port, () => {
   console.log("Server is running.");
