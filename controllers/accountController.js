@@ -15,6 +15,18 @@ class AccountController {
         }
       });
   }
+  async getParentAccountByPhone(req, res, next) {
+    const phone = req.query.phone;
+    Accounts.findOne({ phone: phone, role: "Parent" })
+      .select("-password")
+      .then((user) => {
+        if (!user) {
+          res.status(400).json({ error: "Tài khoản không tồn tại" });
+        } else {
+          res.status(200).json({ user: user });
+        }
+      });
+  }
   async register(req, res, next) {
     const {
       username,
