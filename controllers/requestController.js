@@ -79,6 +79,39 @@ class RequestController {
         return res.status(401).json({ error: "Tạo mới thất bại" });
       });
   }
+
+  async createRequestForCustomProduct(req, res, next) {
+    try {
+      const { childId, parentId, productName, description } = req.body;
+
+      // Validate the input
+      if (!productName || !description) {
+        return res.status(400).json({ error: "Xin hãy nhập tất cả thông tin" });
+      }
+
+      const newRequest = new Request({
+        requestType: "RequestForCustomProduct",
+        childId: childId,
+        parentId: parentId,
+      });
+
+      const savedRequest = await newRequest.save();
+
+      const newRequestForCustomProduct = new RequestForCustomProduct({
+        request: savedRequest._id,
+        productName: productName,
+        description: description,
+      });
+
+      await newRequestForCustomProduct.save();
+
+      res.status(200).json({
+        message: "Tạo yêu cầu thành công",
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 module.exports = new RequestController();
