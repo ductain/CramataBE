@@ -46,7 +46,7 @@ class TaskController {
   async updateTask(req, res, next) {
     try {
       const { id } = req.params;
-      const { parentId, childId, name, points, note, assignedDate } = req.body;
+      const { parentId, childId, name, points, note, assignedDate, status } = req.body;
       const task = await Tasks.findById(id);
 
       if (!task) {
@@ -62,6 +62,7 @@ class TaskController {
           points,
           note,
           assignedDate,
+          status
         },
         { new: true }
       );
