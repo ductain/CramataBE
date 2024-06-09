@@ -3,7 +3,7 @@ const Products = require("../models/Products");
 class ProductController {
     async getAll(req, res, next) {
         Products.find({})
-            .populate('ProductCategories')
+            .populate('category')
             .then((products) => {
                 res.status(200).json(products)
             })
