@@ -174,6 +174,36 @@ class AccountController {
     }
   }
 
+  async forgotPassword(req, res, next) {
+    const { phone, password } = req.body;
+
+    try {
+      const account = await Accounts.findOne({phone: phone, role: "Parent"});
+
+      if (!account) {
+        return res.status(404).json({ error: "Tài khoản không tồn tại." });
+      }
+
+      if (password.length < 6) {
+        return res
+          .status(400)
+          .json({ error: "Mật khẩu phải có ít nhất 6 ký tự." });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+
+      account.password = hashedPassword;
+      await account.save();
+
+      res.status(200).json({
+        message: "Mật khẩu thay đổi thành công. Xin hãy đăng nhập lại.",
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   async login(req, res, next) {
     const { username, password } = req.body;
 
