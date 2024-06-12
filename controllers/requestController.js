@@ -190,6 +190,33 @@ class RequestController {
       next(err);
     }
   }
+
+  async createRequestForBuying(req, res, next) {
+    try {
+      const { childId, parentId, productId } = req.body;
+
+      const newRequest = new Request({
+        requestType: "RequestForBuying",
+        childId: childId,
+        parentId: parentId,
+      });
+
+      const savedRequest = await newRequest.save();
+
+      const newRequestForWishlist = new RequestForBuying({
+        request: savedRequest._id,
+        product: productId
+      });
+
+      await newRequestForWishlist.save();
+
+      res.status(200).json({
+        message: "Tạo yêu cầu thành công",
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 module.exports = new RequestController();

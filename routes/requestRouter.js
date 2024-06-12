@@ -9,6 +9,7 @@ requestRouter.route("/requestOfParent").get(requestController.getRequestByParent
 requestRouter.route("/").post(requestController.create);
 requestRouter.route("/requestForCustomProduct").post(requestController.createRequestForCustomProduct);
 requestRouter.route("/requestForWishlist").post(requestController.createRequestForWishlist);
+requestRouter.route("/requestForBuying").post(requestController.createRequestForBuying);
 requestRouter.route("/updateRequestForWishlistStatus").put(requestController.updateRequestForWishlistStatus);
 
 module.exports = requestRouter;
