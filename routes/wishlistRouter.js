@@ -1,10 +1,13 @@
 const express = require("express");
-const wishlistController = require('../controllers/wishlistController')
+const wishlistController = require("../controllers/wishlistController");
 
 const wishlistRouter = express.Router();
 wishlistRouter
-    .route("/wishlist")
-    .get(wishlistController.getAll)
-    .post(wishlistController.create)
+  .route("/")
+  .get(wishlistController.getAll)
+  .post(wishlistController.create);
+wishlistRouter
+  .route("/wishlistOfChild")
+  .get(wishlistController.getWishlistByChildId);
 
 module.exports = wishlistRouter;
