@@ -7,6 +7,7 @@ taskRouter.route("/")
     .post(taskController.createTask);
 
 taskRouter.route("/parent").get(taskController.getTasksByParentId);
+taskRouter.route("/children").get(taskController.getTasksByChildId);
 
 taskRouter.route("/:id").put(taskController.updateTask);
 
