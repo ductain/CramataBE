@@ -1,4 +1,5 @@
 const Tasks = require("../models/Task");
+const Points = require("../models/Points");
 
 class TaskController {
   async getAllTask(req, res, next) {
@@ -82,6 +83,46 @@ class TaskController {
         .json({ data: updatedTask, message: "Cập nhật nhiệm vụ thành công" });
     } catch (err) {
       return res.status(400).json({ error: "Có lỗi xảy ra trong quá trình cập nhật nhiệm vụ" });
+    }
+  }
+  async updateStatusOfTask(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { status } = req.body; // Assuming status is sent in the request body
+  
+      // Validate the input
+      if (!id || !status) {
+        return res.status(400).json({ error: "Missing task ID or status" });
+      }
+  
+      // Check if the status is either 'Completed' or 'Failed'
+      if (status !== "Completed" && status !== "Failed") {
+        return res.status(400).json({ error: "Invalid status. Must be 'Completed' or 'Failed'." });
+      }
+  
+      // Find the task
+      const task = await Tasks.findById(id);
+  
+      if (!task) {
+        return res.status(404).json({ error: "Task does not exist" });
+      }
+  
+      // Update the status of the task
+      task.status = status;
+      await task.save();
+  
+      // If the task is completed, update the child's points
+      if (status === "Completed") {
+        const childPoints = await Points.findOne({ childId: task.childId });
+        if (childPoints) {
+          childPoints.points += task.points; // Add the task points to the child's points
+          await childPoints.save();
+        }
+      }
+  
+      res.status(200).json({ data: task, message: "Cập nhật trạng thái thành công" });
+    } catch (err) {
+      next(err);
     }
   }
 }
