@@ -3,7 +3,7 @@ const RequestForBuying = require("../models/RequestForBuying");
 const RequestForCustomProduct = require("../models/RequestForCustomProduct");
 const RequestForWishlist = require("../models/RequestForWishlist");
 const Wishlist = require("../models/WishList");
-const Points = require("../models/Points")
+const Points = require("../models/Points");
 
 class RequestController {
   async getAll(req, res, next) {
@@ -237,9 +237,9 @@ class RequestController {
       }
 
       // Find the request for buying
-      const requestForBuying = await RequestForBuying.findById(
-        requestId
-      ).populate("request");
+      const requestForBuying = await RequestForBuying.findById(requestId)
+        .populate("request")
+        .populate("product");
 
       if (!requestForBuying) {
         return res.status(404).json({ error: "Không tìm thấy yêu cầu" });
@@ -254,12 +254,28 @@ class RequestController {
 
       if (status === "Approved") {
         // Deduct the points from the child's points
-        const childPoints = await Points.findOne({
+        const childPointsRecord = await Points.findOne({
           childId: updatedRequest.childId,
         });
-        if (childPoints) {
-          childPoints.points -= requestForBuying.product.points;
-          await childPoints.save();
+        if (
+          childPointsRecord &&
+          typeof childPointsRecord.points === "number" &&
+          requestForBuying.product &&
+          typeof requestForBuying.product.points === "number"
+        ) {
+          // Deduct the points from the child's points
+          const newPoints =
+            childPointsRecord.points - requestForBuying.product.points;
+          if (!isNaN(newPoints)) {
+            childPointsRecord.points = newPoints;
+            await childPointsRecord.save();
+          } else {
+            return res
+              .status(400)
+              .json({ error: "Failed to calculate new points value." });
+          }
+        } else {
+          return res.status(400).json({ error: "Invalid points data." });
         }
 
         // Delete the wishlist item with the specified productId and childId
