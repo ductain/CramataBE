@@ -11,5 +11,6 @@ requestRouter.route("/requestForCustomProduct").post(requestController.createReq
 requestRouter.route("/requestForWishlist").post(requestController.createRequestForWishlist);
 requestRouter.route("/requestForBuying").post(requestController.createRequestForBuying);
 requestRouter.route("/updateRequestForWishlistStatus").put(requestController.updateRequestForWishlistStatus);
+requestRouter.route("/updateRequestForBuyingStatus").put(requestController.updateRequestForBuyingStatus);
 
 module.exports = requestRouter;
