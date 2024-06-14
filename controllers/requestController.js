@@ -4,6 +4,7 @@ const RequestForCustomProduct = require("../models/RequestForCustomProduct");
 const RequestForWishlist = require("../models/RequestForWishlist");
 const Wishlist = require("../models/WishList");
 const Points = require("../models/Points");
+const Product = require("../models/Products");
 
 class RequestController {
   async getAll(req, res, next) {
@@ -286,6 +287,65 @@ class RequestController {
         res.status(200).json({ message: "Đã chấp nhận yêu cầu" });
       } else {
         res.status(200).json({ message: "Yêu cầu bị huỷ" });
+      }
+    } catch (err) {
+      next(err);
+    }
+  }
+  async updateRequestForCustomProductStatus(req, res, next) {
+    try {
+      const { status, image, points, createdBy } = req.body;
+      const { requestId } = req.query;
+
+      // Validate the input
+      if (!requestId || !status) {
+        return res.status(400).json({ error: "Missing request ID or status" });
+      }
+
+      // Check if the status is either 'Approved' or 'Denied'
+      if (status !== "Approved" && status !== "Denied") {
+        return res
+          .status(400)
+          .json({ error: "Invalid status. Must be 'Approved' or 'Denied'." });
+      }
+
+      // Find the request for custom product
+      const requestForCustomProduct = await RequestForCustomProduct.findById(
+        requestId
+      ).populate("request");
+
+      if (!requestForCustomProduct) {
+        return res.status(404).json({ error: "Request not found" });
+      }
+
+      // Update the status of the request
+      requestForCustomProduct.status = status;
+      await requestForCustomProduct.save();
+
+      if (status === "Approved") {
+        // Create a new product
+        const newProduct = new Product({
+          name: requestForCustomProduct.productName,
+          category: "66686c19355ac59ce927c9e9",
+          image: image,
+          createdBy: createdBy,
+          points: points,
+          isInShop: false,
+        });
+
+        const savedProduct = await newProduct.save();
+
+        // Create a new wishlist item with the childId from the request and productId of the newly created product
+        const newWishlistItem = new Wishlist({
+          childId: requestForCustomProduct.childId,
+          product: savedProduct._id,
+        });
+
+        await newWishlistItem.save();
+
+        res.status(200).json({ message: "Tạo yêu cầu thành công" });
+      } else {
+        res.status(200).json({ message: "Đã huỷ yêu cầu" });
       }
     } catch (err) {
       next(err);
