@@ -319,8 +319,11 @@ class RequestController {
       }
 
       // Update the status of the request
-      requestForCustomProduct.status = status;
-      await requestForCustomProduct.save();
+      const updatedRequest = await Request.findByIdAndUpdate(
+        requestForCustomProduct.request._id,
+        { status: status },
+        { new: true }
+      );
 
       if (status === "Approved") {
         // Create a new product
@@ -337,7 +340,7 @@ class RequestController {
 
         // Create a new wishlist item with the childId from the request and productId of the newly created product
         const newWishlistItem = new Wishlist({
-          childId: requestForCustomProduct.childId,
+          childId: updatedRequest.childId,
           product: savedProduct._id,
         });
 
