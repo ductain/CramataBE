@@ -19,13 +19,20 @@ class RequestController {
 
   async getRequestByParentId(req, res, next) {
     const id = req.query.id;
-    Request.find({ parentId: id }).then((request) => {
-      if (request.length === 0) {
+    try {
+      const requests = await Request.find({ parentId: id })
+        .sort({ createdAt: -1 }) // Sort by timestamp in descending order
+        .exec();
+  
+      if (requests.length === 0) {
         res.status(400).json({ error: "Không có yêu cầu nào" });
       } else {
-        res.status(200).json({ requests: request });
+        res.status(200).json({ requests: requests });
       }
-    });
+    } catch (error) {
+      console.error("Error fetching requests:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
   }
 
   async getDetail(req, res, next) {
