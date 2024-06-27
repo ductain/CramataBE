@@ -11,6 +11,15 @@ class ProductController {
                 return res.status(500).json({ error: "Không tìm thấy sản phẩm nào" });
             })
     }
+    async getByCategoryId(req, res, next) {
+        Products.find({category: req.params.categoryId})
+            .then((products) => {
+                res.status(200).json(products)
+            })
+            .catch(err => {
+                return res.status(500).json({ error: "Không tìm thấy sản phẩm nào" });
+            })
+    }
     async create(req, res, next) {
         try {
             if (req.body.isInShop) {
