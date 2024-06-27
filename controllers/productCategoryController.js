@@ -11,13 +11,16 @@ class ProductCategoryController {
             })
     };
     async create(req, res, next) {
-        ProductCategories.create(req.body)
-            .then((category) => {
-                res.status(200).json('Tạo mới thành công loại sản phẩm');
-            })
-            .catch(err => {
-                return res.status(401).json({ error: "Có lỗi xảy ra" });
-            })
+        try {
+            const category = await ProductCategories.findOne({ name: req.body.name });
+            if (category) {
+                return res.status(400).json({ error: "Loại sản phẩm đã tồn tại!" });
+            }
+            const newCategory = await ProductCategories.create(req.body);
+            res.status(200).json('Tạo loại sản phẩm thành công');
+        } catch (err) {
+            return res.status(500).json({ error: "Có lỗi xảy ra" });
+        }
     };
     async update(req, res, next) {
         try {
