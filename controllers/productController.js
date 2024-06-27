@@ -12,20 +12,19 @@ class ProductController {
             })
     }
     async create(req, res, next) {
-        if (req.body.isInShop) {
-            Products.findOne({ name: req.body.name, isInShop: true })
-                .then((products) => {
+        try {
+            if (req.body.isInShop) {
+                const product = await Products.findOne({ name: req.body.name, isInShop: true });
+                if (product) {
                     return res.status(400).json({ error: "Sản phẩm trùng tên!" });
-                })
+                }
+            }
+            const newProduct = await Products.create(req.body);
+            res.status(200).json('Tạo sản phẩm thành công');
+        } catch (err) {
+            return res.status(500).json({ error: "Có lỗi xảy ra" });
         }
-        Products.create(req.body)
-            .then((product) => {
-                res.status(200).json('Tạo sản phẩm thành công');
-            })
-            .catch(err => {
-                return res.status(500).json({ error: "Có lỗi xảy ra" });
-            })
-    };
+    }
     async update(req, res, next) {
         try {
             const { id } = req.params;
