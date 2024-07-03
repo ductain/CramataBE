@@ -13,6 +13,7 @@ const requestForBuyingRouter = require('./routes/requestForBuyingRouter')
 const requestForCustomProductRouter = require('./routes/requestForCustomProductRouter')
 const requestForWishlistRouter = require('./routes/requestForWishlistRouter')
 const wishlistRouter = require("./routes/wishlistRouter")
+const notiRouter = require("./routes/notificationRouter")
 
 
 const app = express();
@@ -43,6 +44,7 @@ app.use("/requestForWishlist", requestForWishlistRouter);
 app.use("/requestForCustomProduct", requestForCustomProductRouter);
 app.use("/requestForBuying", requestForBuyingRouter);
 app.use("/wishlists", wishlistRouter);
+app.use("/notifications", notiRouter);
 
 app.listen(port, () => {
   console.log("Server is running.");

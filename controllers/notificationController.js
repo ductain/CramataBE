@@ -10,6 +10,15 @@ class NotificationController {
                 res.status(500).json('Error:' + err.message)
             })
     };
+    async getByChildId(req, res, next) {
+        Notifications.find({ userId: req.query.childId })
+            .then((notifications) => {
+                res.status(200).json(notifications)
+            })
+            .catch(err => {
+                return res.status(500).json({ error: "Không tìm thấy noti của bé" });
+            })
+    };
     async create(req, res, next) {
         Notifications.create(req.body)
             .then((notification) => {
