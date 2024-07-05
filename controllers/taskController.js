@@ -82,10 +82,10 @@ class TaskController {
       // if (status == 'Completed') {
         const newTaskNoti = new Notifications({
           userId: childId,
-          notiType: 'notiTask',
+          notiType: 'notiPoint',
           title: `Bạn đã được cộng ${Math.abs(points)} điểm do hoàn thành nhiệm vụ.`,
-          message: 'Blah blah',
-          points: 200
+          message: name,
+          points: points
         });
         // Save the notification
         await newTaskNoti.save();
