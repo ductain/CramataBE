@@ -106,7 +106,7 @@ class PointController {
             const newNotification = new Notifications({
                 userId: childId,
                 notiType: 'notiPoint',
-                title: `Điểm của bạn đã được ${points >= 0 ? 'cộng' : 'trừ'} ${Math.abs(points)} điểm.`,
+                title: `Bạn đã ${points >= 0 ? 'được thưởng' : 'bị phạt trừ'} ${Math.abs(points)} điểm.`,
                 message: reason,
                 points: points
             });

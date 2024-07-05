@@ -1,5 +1,6 @@
 const Tasks = require("../models/Task");
 const Points = require("../models/Points");
+const Notifications = require("../models/Notifications");
 
 class TaskController {
   async getAllTask(req, res, next) {
@@ -78,6 +79,15 @@ class TaskController {
         },
         { new: true }
       );
+      if(status === "Completed") {
+        const newTaskNoti = new Notifications({
+          userId: childId,
+          notiType: 'notiTask',
+          title: `Bạn đã được cộng ${Math.abs(points)} điểm do hoàn thành nhiệm vụ.`,
+          message: updatedTask.name,
+          points: points
+      });
+      }
       res
         .status(200)
         .json({ data: updatedTask, message: "Cập nhật nhiệm vụ thành công" });
