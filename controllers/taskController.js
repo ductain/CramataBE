@@ -79,7 +79,7 @@ class TaskController {
         },
         { new: true }
       );
-      if (status == "Completed") {
+      if (status == 'Completed') {
         const newTaskNoti = new Notifications({
           userId: childId,
           notiType: 'notiTask',
