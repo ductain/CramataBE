@@ -79,7 +79,7 @@ class TaskController {
         },
         { new: true }
       );
-      if (status == 'Completed') {
+      // if (status == 'Completed') {
         const newTaskNoti = new Notifications({
           userId: childId,
           notiType: 'notiTask',
@@ -89,7 +89,7 @@ class TaskController {
         });
         // Save the notification
         await newTaskNoti.save();
-      }
+      // }
       res
         .status(200)
         .json({ data: updatedTask, message: "Cập nhật nhiệm vụ thành công" });
