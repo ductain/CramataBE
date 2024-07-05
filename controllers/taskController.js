@@ -118,7 +118,7 @@ class TaskController {
         const newTaskNoti = new Notifications({
           userId: task.childId,
           notiType: 'notiTask',
-          title: `Bạn đã được cộng ${Math.abs(points)} điểm do hoàn thành nhiệm vụ.`,
+          title: `Bạn đã được cộng ${Math.abs(task.points)} điểm do hoàn thành nhiệm vụ.`,
           message: task.name,
           points: task.points
         });
