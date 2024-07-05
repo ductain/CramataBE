@@ -79,17 +79,7 @@ class TaskController {
         },
         { new: true }
       );
-      // if (status == 'Completed') {
-        const newTaskNoti = new Notifications({
-          userId: childId,
-          notiType: 'notiPoint',
-          title: `Bạn đã được cộng ${Math.abs(points)} điểm do hoàn thành nhiệm vụ.`,
-          message: 'Blah blah',
-          points: 500
-        });
-        // Save the notification
-        await newTaskNoti.save();
-      // }
+
       res
         .status(200)
         .json({ data: updatedTask, message: "Cập nhật nhiệm vụ thành công" });
@@ -125,6 +115,15 @@ class TaskController {
 
       // If the task is completed, update the child's points
       if (status === "Completed") {
+        const newTaskNoti = new Notifications({
+          userId: task.childId,
+          notiType: 'notiTask',
+          title: `Bạn đã được cộng ${Math.abs(points)} điểm do hoàn thành nhiệm vụ.`,
+          message: task.name,
+          points: task.points
+        });
+        // Save the notification
+        await newTaskNoti.save();
         const childPoints = await Points.findOne({ childId: task.childId });
         if (childPoints) {
           childPoints.points += task.points; // Add the task points to the child's points
