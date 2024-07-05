@@ -84,7 +84,7 @@ class TaskController {
           userId: childId,
           notiType: 'notiTask',
           title: `Bạn đã được cộng ${Math.abs(points)} điểm do hoàn thành nhiệm vụ.`,
-          message: updatedTask.name,
+          message: name,
           points: points
         });
         // Save the notification
