@@ -5,6 +5,8 @@ const RequestForWishlist = require("../models/RequestForWishlist");
 const Wishlist = require("../models/WishList");
 const Points = require("../models/Points");
 const Product = require("../models/Products");
+const Notifications = require("../models/Notifications");
+const Products = require("../models/Products");
 
 class RequestController {
   async getAll(req, res, next) {
@@ -23,7 +25,7 @@ class RequestController {
       const requests = await Request.find({ parentId: id })
         .sort({ createdAt: -1 }) // Sort by timestamp in descending order
         .exec();
-  
+
       if (requests.length === 0) {
         res.status(400).json({ error: "Không có yêu cầu nào" });
       } else {
@@ -183,18 +185,28 @@ class RequestController {
         { new: true }
       );
 
+      const product = await Products.findById(requestForWishlist.product);
+      const newRequestNoti = new Notifications({
+        userId: updatedRequest.childId,
+        notiType: 'notiRequest',
+        title: `Yêu cầu "Thêm vào Wishlist" của bạn đã ${status === "Approved" ? "được phê duyệt " : "bị từ chối"} `,
+        message: `Món quà: ${product.name}`,
+        points: null
+      });
+      // Save the notification
+      await newRequestNoti.save();
       if (status === "Approved") {
         // Create a new wishlist item
         const newWishlistItem = new Wishlist({
           product: requestForWishlist.product,
           childId: updatedRequest.childId,
         });
-
         await newWishlistItem.save();
         res.status(200).json({ message: "Đã chấp nhận yêu cầu" });
       } else {
         res.status(200).json({ message: "Yêu cầu bị huỷ" });
       }
+
     } catch (err) {
       next(err);
     }
@@ -260,6 +272,7 @@ class RequestController {
         { new: true }
       );
 
+      const product = await Products.findById(requestForBuying.product);
       if (status === "Approved") {
         // Deduct the points from the child's points
         const childPointsRecord = await Points.findOne({
@@ -277,6 +290,15 @@ class RequestController {
           if (!isNaN(newPoints)) {
             childPointsRecord.points = newPoints;
             await childPointsRecord.save();
+            const newRequestNoti = new Notifications({
+              userId: updatedRequest.childId,
+              notiType: 'notiRequest',
+              title: `Yêu cầu "Đổi điểm" của bạn đã được phê duyệt`,
+              message: `Món quà: ${product.name}`,
+              points: null
+            });
+            // Save the notification
+            await newRequestNoti.save();
           } else {
             return res
               .status(400)
@@ -293,6 +315,15 @@ class RequestController {
         });
         res.status(200).json({ message: "Đã chấp nhận yêu cầu" });
       } else {
+        const newRequestNoti = new Notifications({
+          userId: updatedRequest.childId,
+          notiType: 'notiRequest',
+          title: `Yêu cầu "Đổi điểm" của bạn đã bị từ chối`,
+          message: `Món quà: ${product.name}`,
+          points: null
+        });
+        // Save the notification
+        await newRequestNoti.save();
         res.status(200).json({ message: "Yêu cầu bị huỷ" });
       }
     } catch (err) {
@@ -352,9 +383,29 @@ class RequestController {
         });
 
         await newWishlistItem.save();
+        if (newWishlistItem) {
+          const newRequestNoti = new Notifications({
+            userId: updatedRequest.childId,
+            notiType: 'notiRequest',
+            title: `Yêu cầu "Tạo mới món quà" của bạn được phê duyệt`,
+            message: `Món quà: ${requestForCustomProduct.productName}`,
+            points: null
+          });
+          // Save the notification
+          await newRequestNoti.save();
+        }
 
         res.status(200).json({ message: "Tạo yêu cầu thành công" });
       } else {
+          const newRequestNoti = new Notifications({
+            userId: updatedRequest.childId,
+            notiType: 'notiRequest',
+            title: `Yêu cầu "Tạo mới món quà" của bạn bị từ chối`,
+            message: `Món quà: ${requestForCustomProduct.productName}`,
+            points: null
+          });
+          // Save the notification
+          await newRequestNoti.save();
         res.status(200).json({ message: "Đã huỷ yêu cầu" });
       }
     } catch (err) {
