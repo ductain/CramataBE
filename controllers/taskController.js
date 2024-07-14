@@ -51,6 +51,17 @@ class TaskController {
 
       await newTask.save();
 
+      if(newTask){
+        const newTaskNoti = new Notifications({
+          userId: newTask.childId,
+          notiType: 'notiTask',
+          title: `Bạn đã được giao cho 1 nhiệm vụ mới`,
+          message: newTask.name,
+          points: null
+        });
+        // Save the notification
+        await newTaskNoti.save();
+      }
       res.status(201).json({ data: newTask, message: "Nhiệm vụ đã được giao" });
     } catch (err) {
       res.status(400).json({ error: "Tạo nhiệm vụ thất bại" });
