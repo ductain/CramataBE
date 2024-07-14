@@ -140,6 +140,21 @@ class TaskController {
           childPoints.points += task.points; // Add the task points to the child's points
           await childPoints.save();
         }
+      } else {
+        const newTaskNoti = new Notifications({
+          userId: task.childId,
+          notiType: 'notiTask',
+          title: `Bạn đã bị trừ ${Math.abs(task.points)} điểm do không hoàn thành nhiệm vụ.`,
+          message: task.name,
+          points: -task.points
+        });
+        // Save the notification
+        await newTaskNoti.save();
+        const childPoints = await Points.findOne({ childId: task.childId });
+        if (childPoints) {
+          childPoints.points -= task.points; // Add the task points to the child's points
+          await childPoints.save();
+        }
       }
 
       res.status(200).json({ data: task, message: "Cập nhật trạng thái thành công" });
